@@ -11,7 +11,7 @@
 class QTermWidget : QWidget {
 
 %TypeHeaderCode
-#include <qtermwidget.h>
+#include </home/charlie/.pyenv/versions/py10/include/qtermwidget5/qtermwidget.h>
 %End
 
 public:
@@ -56,6 +56,7 @@ public:
     void setScrollBarPosition(ScrollBarPosition);
     void scrollToEnd();
     void sendText(QString &text);
+    void sendKeyEvent(QKeyEvent *e);
     void setFlowControlEnabled(bool enabled);
     bool flowControlEnabled();
     void setFlowControlWarningEnabled(bool enabled);

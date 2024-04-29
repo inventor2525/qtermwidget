@@ -17,6 +17,6 @@ class Terminal(QTermWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
-    args = ["--clean", "--noplugin"]
-    term = Terminal("vim", args)
+    args = [] #["--clean", "--noplugin"]
+    term = Terminal("bash", args)
     app.exec()
