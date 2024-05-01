@@ -295,11 +295,13 @@ void Pty::sendData(const char* data, int length)
     qWarning() << "Pty::doSendJobs - Could not send input data to terminal process.";
     return;
   }
+  emit sentBytes(QByteArray(data,length));
 }
 
 void Pty::dataReceived()
 {
      QByteArray data = pty()->readAll();
+    emit receivedBytes(data);
     emit receivedData(data.constData(),data.count());
 }
 

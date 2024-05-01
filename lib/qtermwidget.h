@@ -294,6 +294,18 @@ signals:
      * terminal emulator
      */
     void receivedData(const QString &text);
+    
+    /**
+     * Similar to receivedData, but with raw (lossless) data.
+     * 
+     * receivedData looses non-unicode characters, this doesn't.
+     */
+    void receivedBytes(const QByteArray &data);
+    
+    /**
+     * Signals that we have sent bytes to the process running in the terminal emulator.
+     */
+    void sentBytes(const QByteArray &data);
 
 public slots:
     // Copy selection to clipboard

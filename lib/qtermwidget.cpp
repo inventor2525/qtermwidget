@@ -300,6 +300,8 @@ void QTermWidget::init(int startnow)
     connect(m_impl->m_session, SIGNAL(silence()), this, SIGNAL(silence()));
     connect(m_impl->m_session, &Session::profileChangeCommandReceived, this, &QTermWidget::profileChanged);
     connect(m_impl->m_session, &Session::receivedData, this, &QTermWidget::receivedData);
+    connect(m_impl->m_session, &Session::receivedBytes, this, &QTermWidget::receivedBytes);
+    connect(m_impl->m_session, &Session::sentBytes, this, &QTermWidget::sentBytes);
 
     // That's OK, FilterChain's dtor takes care of UrlFilter.
     UrlFilter *urlFilter = new UrlFilter();

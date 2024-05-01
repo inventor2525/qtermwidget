@@ -91,6 +91,8 @@ signals:
     void sendData(const char *,int);
     void titleChanged();
     void receivedData(const QString &text);
+    void receivedBytes(const QByteArray &data);
+    void sentBytes(const QByteArray &data);
     void profileChanged(const QString & profile);
 public slots:
     void copyClipboard();

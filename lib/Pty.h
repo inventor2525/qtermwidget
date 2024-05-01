@@ -187,6 +187,16 @@ Q_OBJECT
      * @param length Length of @p buffer
      */
     void receivedData(const char* buffer, int length);
+    
+    /**
+     * Signals that we have received bytes.
+     */
+    void receivedBytes(const QByteArray &data);
+    
+    /**
+     * Signals that we have sent bytes.
+     */
+    void sentBytes(const QByteArray &data);
 
   protected:
       void setupChildProcess() override;

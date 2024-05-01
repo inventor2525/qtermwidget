@@ -421,6 +421,16 @@ signals:
      */
     void receivedData( const QString & text );
 
+    /**
+     * Signals that we have received bytes.
+     */
+    void receivedBytes(const QByteArray &data);
+    
+    /**
+     * Signals that we have sent bytes.
+     */
+    void sentBytes(const QByteArray &data);
+    
     /** Emitted when the session's title has changed. */
     void titleChanged();
 
