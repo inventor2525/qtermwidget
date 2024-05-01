@@ -60,6 +60,10 @@ class MainWindow(QtWidgets.QWidget):
 		#register send data signal:
 		self.terminal.sendData.connect(self.on_send_data)
 		
+		
+		self.terminal.receivedBytes.connect(self.on_received_bytes)
+		self.terminal.sentBytes.connect(self.on_sent_bytes)
+		
 	def on_received_data(self, data):
 		self.out_text_edit.append(data)
 		
@@ -67,6 +71,12 @@ class MainWindow(QtWidgets.QWidget):
 	def on_send_data(self, data, size):
 		self.in_text_edit.append(data)
 
+	def on_received_bytes(self, data:QtCore.QByteArray):
+		print("received bytes:", data)
+	
+	def on_sent_bytes(self, data:QtCore.QByteArray):
+		print("sent bytes:", data)
+		
 	def send_to_terminal(self):
 		event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_C, QtCore.Qt.ControlModifier)
 		# self.terminal.sendKeyEvent(event)
