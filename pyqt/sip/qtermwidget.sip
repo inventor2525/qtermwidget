@@ -11,7 +11,7 @@
 class QTermWidget : QWidget {
 
 %TypeHeaderCode
-#include </home/charlie/.pyenv/versions/py10/include/qtermwidget5/qtermwidget.h>
+#include <qtermwidget.h>
 %End
 
 public:

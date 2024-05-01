@@ -7,7 +7,7 @@ class QTermWidget(PyQtProject):
 
 class QTermWidgetBindings(PyQtBindings):
     def __init__(self, project):
-        super().__init__(project, name='QTermWidget', sip_file='qtermwidget.sip', qmake_QT=['widgets'])
+        super().__init__(project, name='QTermWidget', sip_file='qtermwidget.sip', qmake_QT=['widgets'], include_dirs=["/usr/include/qtermwidget5/"])
         self._project = project
 
     def apply_user_defaults(self, tool):

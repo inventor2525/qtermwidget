@@ -8,3 +8,4 @@ build-backend = "sipbuild.api"
 name = "QTermWidget"
 version = "1.4.0"
 requires-dist = ["PyQt5"]
+include-dirs = ["/home/charlie/Projects/qtermwidget/build/include", "/home/charlie/Projects/qtermwidget/lib"]
