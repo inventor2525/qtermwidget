@@ -8,6 +8,19 @@
 %Import QtCore/QtCoremod.sip
 %Import QtWidgets/QtWidgetsmod.sip
 
+class CharacterWrapper
+{
+%TypeHeaderCode
+#include "CharacterWrapper.h"
+%End
+
+public:
+    quint16 characterValue() const;
+    QColor foregroundColor() const;
+    QColor backgroundColor() const;
+    quint8 rendition() const;
+};
+
 class QTermWidget : QWidget {
 
 %TypeHeaderCode
@@ -65,6 +78,7 @@ public:
     void setMotionAfterPasting(int);
     int historyLinesCount();
     int screenColumnsCount();
+    QList<CharacterWrapper*> getImage(int startLine, int endLine);
     void setSelectionStart(int row, int column);
     void setSelectionEnd(int row, int column);
     void getSelectionStart(int& row, int& column);

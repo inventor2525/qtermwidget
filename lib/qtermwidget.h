@@ -27,6 +27,7 @@
 #include "qtermwidget_export.h"
 #include "qtermwidget_version.h"
 #include "qtermwidget_interface.h"
+#include "CharacterWrapper.h"
 
 class QVBoxLayout;
 class TermWidgetImpl;
@@ -170,7 +171,10 @@ public:
 
     int screenColumnsCount() override;
     int screenLinesCount() override;
-
+    
+    QList<CharacterWrapper*> getImage(int startLine, int endLine) const;
+    QVector<Konsole::LineProperty> getLineProperties(int startLine, int endLine) const;
+    
     void setSelectionStart(int row, int column) override;
     void setSelectionEnd(int row, int column) override;
     void getSelectionStart(int& row, int& column) override;

@@ -101,6 +101,7 @@ set(HDRS
     lib/Session.h
     lib/TerminalDisplay.h
     lib/Vt102Emulation.h
+    lib/CharacterWrapper.h
 )
 
 set(UI
@@ -114,6 +115,7 @@ set(HDRS_DISTRIB
     lib/KeyboardTranslator.h
     lib/Filter.h
     lib/qtermwidget_interface.h
+    lib/CharacterWrapper.h
 )
 
 # dirs

@@ -677,6 +677,40 @@ int QTermWidget::screenLinesCount()
     return m_impl->m_terminalDisplay->screenWindow()->screen()->getLines();
 }
 
+QList<CharacterWrapper*> QTermWidget::getImage(int startLine, int endLine) const
+{
+    QList<CharacterWrapper*> imageList;
+    auto screen = m_impl->m_terminalDisplay->screenWindow()->screen();
+    int columns = screen->getColumns();
+    int number_of_lines = endLine - startLine + 1;
+    int buffer_size = columns * number_of_lines;
+    Character* buffer = new Character[buffer_size];
+    screen->getImage(buffer, buffer_size, startLine, endLine);
+
+    for(int line = 0; line < number_of_lines; ++line)
+    {
+        for(int col = 0; col < columns; ++col)
+        {
+            Character& character = buffer[line * columns + col];
+            imageList.append(new CharacterWrapper(
+                character.character,
+                character.foregroundColor.color(base_color_table),
+                character.backgroundColor.color(base_color_table),
+                character.rendition
+            ));
+        }
+    }
+
+    delete[] buffer;
+    return imageList;
+}
+
+QVector<Konsole::LineProperty> QTermWidget::getLineProperties(int startLine, int endLine) const
+{
+    auto screen = m_impl->m_terminalDisplay->screenWindow()->screen();
+    return screen->getLineProperties(startLine, endLine);
+}
+
 void QTermWidget::setSelectionStart(int row, int column)
 {
     m_impl->m_terminalDisplay->screenWindow()->screen()->setSelectionStart(column, row, true);

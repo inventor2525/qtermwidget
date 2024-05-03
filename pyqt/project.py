@@ -1,5 +1,20 @@
 from pyqtbuild import PyQtBindings, PyQtProject
+from enum import Enum
 
+class Rendition(Enum):
+    DEFAULT = 0
+    BOLD = 1
+    BLINK = 2
+    UNDERLINE = 4
+    REVERSE = 8
+    ITALIC = 16
+    CURSOR = 32
+    EXTENDED_CHAR = 64
+    FAINT = 128
+    STRIKEOUT = 256
+    CONCEAL = 512
+    OVERLINE = 1024
+    
 class QTermWidget(PyQtProject):
     def __init__(self):
         super().__init__()
