@@ -99,14 +99,21 @@ class MyApp(QtWidgets.QApplication):
 			if isinstance(obj.parent(), QTermWidget):
 				return True
 		if event.type() == QtCore.QEvent.KeyPress:
-				key = event.key()
-				modifiers = event.modifiers()
-				text = event.text()
-				
-				if self.should_block:
-					return True
+			key = event.key()
+			modifiers = event.modifiers()
+			text = event.text()
+			
+			if self.should_block:
+				return True
 		return super().eventFilter(obj, event)
 
+def thing(startline, endline):
+	try:
+		print([l_.characterValue() for l_ in mainWindow.terminal.getImage(startline, endline)])
+	except Exception as e:
+		print(e)
+		
+		
 if __name__ == "__main__":
 	app = MyApp([])
 	mainWindow = MainWindow()
