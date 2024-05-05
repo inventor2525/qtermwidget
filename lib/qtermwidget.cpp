@@ -677,9 +677,9 @@ int QTermWidget::screenLinesCount()
     return m_impl->m_terminalDisplay->screenWindow()->screen()->getLines();
 }
 
-QList<CharacterWrapper*> QTermWidget::getImage(int startLine, int endLine) const
+QList<CharacterWrapper> QTermWidget::getImage(int startLine, int endLine) const
 {
-    QList<CharacterWrapper*> imageList;
+    QList<CharacterWrapper> imageList;
     auto screen = m_impl->m_terminalDisplay->screenWindow()->screen();
     int columns = screen->getColumns();
     int number_of_lines = endLine - startLine + 1;
@@ -692,7 +692,7 @@ QList<CharacterWrapper*> QTermWidget::getImage(int startLine, int endLine) const
         for(int col = 0; col < columns; ++col)
         {
             Character& character = buffer[line * columns + col];
-            imageList.append(new CharacterWrapper(
+            imageList.append(CharacterWrapper(
                 character.character,
                 character.foregroundColor.color(base_color_table),
                 character.backgroundColor.color(base_color_table),

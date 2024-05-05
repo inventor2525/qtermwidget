@@ -79,7 +79,7 @@ public:
     int historyLinesCount();
     int screenColumnsCount();
     int screenLinesCount();
-    QList<CharacterWrapper*> getImage(int startLine, int endLine);
+    QList<CharacterWrapper> getImage(int startLine, int endLine);
     void setSelectionStart(int row, int column);
     void setSelectionEnd(int row, int column);
     void getSelectionStart(int& row, int& column);

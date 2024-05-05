@@ -172,7 +172,7 @@ public:
     int screenColumnsCount() override;
     int screenLinesCount() override;
     
-    QList<CharacterWrapper*> getImage(int startLine, int endLine) const;
+    QList<CharacterWrapper> getImage(int startLine, int endLine) const;
     QVector<Konsole::LineProperty> getLineProperties(int startLine, int endLine) const;
     
     void setSelectionStart(int row, int column) override;

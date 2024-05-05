@@ -57,7 +57,7 @@ class MainWindow(QtWidgets.QWidget):
 		self.block_button.setCheckable(True)
 		def toggle_block(checked):
 			app.should_block = checked
-		self.block_button.toggled.connect(toggle_block)
+		self.block_button.toggled.connect(self.print_whole_image)
 		self.buttons_layout.addWidget(self.block_button)
 		
 		#horizontal layout for input and output textfield debug views:
@@ -112,6 +112,20 @@ class MainWindow(QtWidgets.QWidget):
 		def send():
 			self.terminal.sendText(self.user_input.toPlainText())
 		QtCore.QTimer.singleShot(1, send)
+	
+	def print_image(self, startline, endline):
+		try:
+			num_lines = endline - startline + 1
+			image = self.terminal.getImage(startline, endline)
+			columns = self.terminal.screenColumnsCount()
+			for i in range(num_lines):
+				line = image[i*columns:(i+1)*columns]
+				print("".join([chr(l_.characterValue()) for l_ in line]))
+		except Exception as e:
+			print(e)
+
+	def print_whole_image(self):
+		self.print_image(0, self.terminal.screenLinesCount()-1)#historyLinesCount())
 
 class MyApp(QtWidgets.QApplication):
 	def __init__(self, *args, **kwargs):
@@ -132,12 +146,6 @@ class MyApp(QtWidgets.QApplication):
 				return True
 		return super().eventFilter(obj, event)
 
-def thing(startline, endline):
-	try:
-		print([l_.characterValue() for l_ in mainWindow.terminal.getImage(startline, endline)])
-	except Exception as e:
-		print(e)
-		
 		
 if __name__ == "__main__":
 	app = MyApp([])
