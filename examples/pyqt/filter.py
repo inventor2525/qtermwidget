@@ -20,16 +20,34 @@ class MainWindow(QtWidgets.QWidget):
 		super().__init__()
 		self.layout = QtWidgets.QVBoxLayout(self)
 
+		# Create a splitter to divide the terminal and the rest of the layout
+		self.splitter = QtWidgets.QSplitter(QtCore.Qt.Vertical)
+		self.layout.addWidget(self.splitter)
+
 		# Initialize the terminal
 		self.terminal = Terminal("bash", [])
-		self.layout.addWidget(self.terminal)
-		
-		
+		self.splitter.addWidget(self.terminal)
+
+		# Create widget for the bottom layout
+		self.bottomWidget = QtWidgets.QWidget()
+		self.bottomLayout = QtWidgets.QVBoxLayout(self.bottomWidget)
+		self.splitter.addWidget(self.bottomWidget)
+
+		# Add input field to the bottom layout
+		self.input_layout = QtWidgets.QVBoxLayout()
+		self.bottomLayout.addLayout(self.input_layout)
+		self.input_label = QtWidgets.QLabel("User Input:")
+		self.input_label.setFixedHeight(20)
+		self.input_layout.addWidget(self.input_label)
+		self.user_input = QtWidgets.QTextEdit()
+		self.user_input.setFixedHeight(100)
+		self.input_layout.addWidget(self.user_input)
+
 		self.buttons_layout = QtWidgets.QHBoxLayout()
-		self.layout.addLayout(self.buttons_layout)
+		self.bottomLayout.addLayout(self.buttons_layout)
 		
 		# Add a button to send 'a' key press to the terminal
-		self.send_button = QtWidgets.QPushButton("Send 'a'")
+		self.send_button = QtWidgets.QPushButton("Send To Terminal")
 		self.send_button.clicked.connect(self.send_to_terminal)
 		self.buttons_layout.addWidget(self.send_button)
 		
@@ -44,22 +62,29 @@ class MainWindow(QtWidgets.QWidget):
 		
 		#horizontal layout for input and output textfield debug views:
 		self.text_edits_layout = QtWidgets.QHBoxLayout()
-		self.layout.addLayout(self.text_edits_layout)
+		self.bottomLayout.addLayout(self.text_edits_layout)
 		
 		#input text edit:
+		self.in_text_edit_layout = QtWidgets.QVBoxLayout()
+		self.text_edits_layout.addLayout(self.in_text_edit_layout)
+		self.in_text_label = QtWidgets.QLabel("Pty stdin:")
+		self.in_text_edit_layout.addWidget(self.in_text_label)
 		self.in_text_edit = QtWidgets.QTextEdit()
-		self.text_edits_layout.addWidget(self.in_text_edit)
+		self.in_text_edit_layout.addWidget(self.in_text_edit)
 		
 		#output text edit:
+		self.out_text_edit_layout = QtWidgets.QVBoxLayout()
+		self.text_edits_layout.addLayout(self.out_text_edit_layout)
+		self.out_text_label = QtWidgets.QLabel("Pty stdout:")
+		self.out_text_edit_layout.addWidget(self.out_text_label)
 		self.out_text_edit = QtWidgets.QTextEdit()
-		self.text_edits_layout.addWidget(self.out_text_edit)
+		self.out_text_edit_layout.addWidget(self.out_text_edit)
 		
-		#register received data signal:
-		self.terminal.receivedData.connect(self.on_received_data)
+		# #register received data signal:
+		# self.terminal.receivedData.connect(self.on_received_data)
 		
-		#register send data signal:
-		self.terminal.sendData.connect(self.on_send_data)
-		
+		# #register send data signal:
+		# self.terminal.sendData.connect(self.on_send_data)
 		
 		self.terminal.receivedBytes.connect(self.on_received_bytes)
 		self.terminal.sentBytes.connect(self.on_sent_bytes)
@@ -72,10 +97,10 @@ class MainWindow(QtWidgets.QWidget):
 		self.in_text_edit.append(data)
 
 	def on_received_bytes(self, data:QtCore.QByteArray):
-		print("received bytes:", data)
+		self.out_text_edit.append(str(data))
 	
 	def on_sent_bytes(self, data:QtCore.QByteArray):
-		print("sent bytes:", data)
+		self.in_text_edit.append(str(data))
 		
 	def send_to_terminal(self):
 		event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_C, QtCore.Qt.ControlModifier)
@@ -85,7 +110,7 @@ class MainWindow(QtWidgets.QWidget):
 		# QtCore.QTimer.singleShot(1, clear)
 		
 		def send():
-			self.terminal.sendText(self.in_text_edit.toPlainText())
+			self.terminal.sendText(self.user_input.toPlainText())
 		QtCore.QTimer.singleShot(1, send)
 
 class MyApp(QtWidgets.QApplication):
