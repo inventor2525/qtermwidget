@@ -68,6 +68,7 @@ public:
     void setHistorySize(int lines);
     void setScrollBarPosition(ScrollBarPosition);
     void scrollToEnd();
+    void sendBytes(const QByteArray &data);
     void sendText(QString &text);
     void sendKeyEvent(QKeyEvent *e);
     void setFlowControlEnabled(bool enabled);

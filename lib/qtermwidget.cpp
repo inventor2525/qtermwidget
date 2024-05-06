@@ -537,6 +537,11 @@ void QTermWidget::scrollToEnd()
     m_impl->m_terminalDisplay->scrollToEnd();
 }
 
+void QTermWidget::sendBytes(const QByteArray& data)
+{
+    m_impl->m_session->emulation()->sendData(data.constData(), data.size());
+}
+
 void QTermWidget::sendText(const QString &text)
 {
     m_impl->m_session->sendText(text);

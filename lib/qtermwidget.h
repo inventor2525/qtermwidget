@@ -138,7 +138,10 @@ public:
 
     // Wrapped, scroll to end.
     void scrollToEnd() override;
-
+    
+    // Send some bytes to terminal
+    void sendBytes(const QByteArray & data);
+    
     // Send some text to terminal
     void sendText(const QString & text) override;
 
