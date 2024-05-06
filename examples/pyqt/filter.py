@@ -1,3 +1,4 @@
+import ast
 from PyQt5 import QtWidgets, QtGui
 from QTermWidget import QTermWidget
 from PyQt5.QtCore import QCoreApplication, QEvent, QMetaObject
@@ -106,18 +107,37 @@ class MainWindow(QtWidgets.QWidget):
 	
 	def on_sent_bytes(self, data:QtCore.QByteArray):
 		self.in_text_edit.append(str(data))
-		
-	def send_to_terminal(self):
-		event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_C, QtCore.Qt.ControlModifier)
-		# self.terminal.sendKeyEvent(event)
-		# def clear():
-		# 	self.terminal.sendText("clear\n")
-		# QtCore.QTimer.singleShot(1, clear)
-		
-		def send():
-			self.terminal.sendText(self.user_input.toPlainText())
-		QtCore.QTimer.singleShot(1, send)
 	
+	def send_to_terminal(self):
+		def send():
+			# Get the text from the input field, which could be something like "b'h'\nb'e'\nb'l'\nb'l'\nb'o'\nb'\r'"
+			text = self.user_input.toPlainText()
+			
+			# Split the input text into lines, each representing a byte literal
+			byte_literals = text.splitlines()
+			
+			# Initialize an empty bytes object to accumulate the bytes
+			bytes_to_send = bytes()
+			
+			# Iterate over each byte literal
+			for byte_literal in byte_literals:
+				try:
+					# Convert the byte literal to an actual byte using ast.literal_eval
+					byte = ast.literal_eval(byte_literal)
+					# Ensure the result is a bytes object with length 1
+					if isinstance(byte, bytes) and len(byte) == 1:
+						bytes_to_send += byte
+					else:
+						print(f"Input {byte_literal} is not a single byte.")
+				except (ValueError, SyntaxError):
+					print(f"Failed to parse input {byte_literal} as bytes.")
+			
+			# Send the accumulated bytes to the terminal
+			if bytes_to_send:
+				self.terminal.sendBytes(bytes_to_send)
+		
+		QtCore.QTimer.singleShot(1, send)
+		
 	def print_image(self, startline, endline):
 		try:
 			num_lines = endline - startline + 1
