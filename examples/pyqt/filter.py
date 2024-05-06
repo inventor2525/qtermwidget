@@ -51,13 +51,18 @@ class MainWindow(QtWidgets.QWidget):
 		self.send_button.clicked.connect(self.send_to_terminal)
 		self.buttons_layout.addWidget(self.send_button)
 		
+		# Add a button to print the terminal image
+		self.print_image_button = QtWidgets.QPushButton("Print Image")
+		self.print_image_button.clicked.connect(self.print_whole_image)
+		self.buttons_layout.addWidget(self.print_image_button)
+		
 		# Add a toggle button to block all key presses to the terminal
 		self.block_button = QtWidgets.QToolButton()
 		self.block_button.setText("Block All Key Presses")
 		self.block_button.setCheckable(True)
 		def toggle_block(checked):
 			app.should_block = checked
-		self.block_button.toggled.connect(self.print_whole_image)
+		self.block_button.toggled.connect(toggle_block)
 		self.buttons_layout.addWidget(self.block_button)
 		
 		#horizontal layout for input and output textfield debug views:
@@ -125,8 +130,10 @@ class MainWindow(QtWidgets.QWidget):
 			print(e)
 
 	def print_whole_image(self):
-		self.print_image(0, self.terminal.screenLinesCount()-1)#historyLinesCount())
-
+		print("\n\n\n\nPrinting whole image:\n=================")
+		self.print_image(0, self.terminal.historyLinesCount()+self.terminal.screenLinesCount())
+		print("=================\n\n\n\n")
+		
 class MyApp(QtWidgets.QApplication):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
