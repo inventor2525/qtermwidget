@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets, QtGui
 from QTermWidget import QTermWidget
 from PyQt5.QtCore import QCoreApplication, QEvent, QMetaObject
 from PyQt5.QtWidgets import QApplication
+from typing import List
 
 from PyQt5 import QtCore
 import re
@@ -26,6 +27,7 @@ class MainWindow(QtWidgets.QWidget):
 		self.splitter = QtWidgets.QSplitter(QtCore.Qt.Vertical)
 		self.layout.addWidget(self.splitter)
 
+		self.terminal_label = QtWidgets.QLabel("The terminal emulator (this is what you are use to interacting with):")
 		# Initialize the terminal
 		self.terminal = Terminal("bash", [])
 		self.splitter.addWidget(self.terminal)
@@ -38,9 +40,12 @@ class MainWindow(QtWidgets.QWidget):
 		# Add input field to the bottom layout
 		self.input_layout = QtWidgets.QVBoxLayout()
 		self.bottomLayout.addLayout(self.input_layout)
-		self.input_label = QtWidgets.QLabel("User Input:")
+		self.input_label = QtWidgets.QLabel("User Input (this could be a human or an LLM)")
 		self.input_label.setFixedHeight(20)
 		self.input_layout.addWidget(self.input_label)
+		self.input_label2 = QtWidgets.QLabel("This can contain text, key combos, and scroll events (copy paste from stdin for examples):")
+		self.input_label2.setFixedHeight(20)
+		self.input_layout.addWidget(self.input_label2)
 		self.user_input = QtWidgets.QTextEdit()
 		self.user_input.setFixedHeight(100)
 		self.input_layout.addWidget(self.user_input)
@@ -49,23 +54,21 @@ class MainWindow(QtWidgets.QWidget):
 		self.bottomLayout.addLayout(self.buttons_layout)
 		
 		# Add a button to send 'a' key press to the terminal
-		self.send_button = QtWidgets.QPushButton("Send To Terminal")
+		self.send_button = QtWidgets.QPushButton("Send Above To Terminal")
 		self.send_button.clicked.connect(self.send_to_terminal)
 		self.buttons_layout.addWidget(self.send_button)
 		
-		# Add a button to print the terminal image
-		self.print_image_button = QtWidgets.QPushButton("Print Image")
-		self.print_image_button.clicked.connect(self.print_whole_image)
-		self.buttons_layout.addWidget(self.print_image_button)
-		
 		# Add a toggle button to block all key presses to the terminal
 		self.block_button = QtWidgets.QToolButton()
-		self.block_button.setText("Block All Key Presses")
+		self.block_button.setText("Block All User Input To Terminal")
 		self.block_button.setCheckable(True)
 		def toggle_block(checked):
 			app.should_block = checked
 		self.block_button.toggled.connect(toggle_block)
 		self.buttons_layout.addWidget(self.block_button)
+		
+		self.pty_text_label = QtWidgets.QLabel("This is how a shell talks to the terminal emulator (above) when you type:")
+		self.bottomLayout.addWidget(self.pty_text_label)
 		
 		#horizontal layout for input and output textfield debug views:
 		self.text_edits_layout = QtWidgets.QHBoxLayout()
@@ -74,7 +77,7 @@ class MainWindow(QtWidgets.QWidget):
 		#input text edit:
 		self.in_text_edit_layout = QtWidgets.QVBoxLayout()
 		self.text_edits_layout.addLayout(self.in_text_edit_layout)
-		self.in_text_label = QtWidgets.QLabel("Pty stdin:")
+		self.in_text_label = QtWidgets.QLabel("Pty stdin (the direct input to the shell):")
 		self.in_text_edit_layout.addWidget(self.in_text_label)
 		self.in_text_edit = QtWidgets.QTextEdit()
 		self.in_text_edit_layout.addWidget(self.in_text_edit)
@@ -82,10 +85,19 @@ class MainWindow(QtWidgets.QWidget):
 		#output text edit:
 		self.out_text_edit_layout = QtWidgets.QVBoxLayout()
 		self.text_edits_layout.addLayout(self.out_text_edit_layout)
-		self.out_text_label = QtWidgets.QLabel("Pty stdout:")
+		self.out_text_label = QtWidgets.QLabel("Pty stdout (the direct output of the shell):")
 		self.out_text_edit_layout.addWidget(self.out_text_label)
 		self.out_text_edit = QtWidgets.QTextEdit()
 		self.out_text_edit_layout.addWidget(self.out_text_edit)
+		
+		# print getImage() output to text edit:
+		self.image_text_label = QtWidgets.QLabel("Terminal screen contents")
+		self.bottomLayout.addWidget(self.image_text_label)
+		self.image_text_label2 = QtWidgets.QLabel("This is the current rendered plain text only state of the terminal, after interpreting all that stuff above:")
+		self.bottomLayout.addWidget(self.image_text_label2)
+		self.image_text_edit = QtWidgets.QTextEdit()
+		self.image_text_edit.setReadOnly(True)
+		self.bottomLayout.addWidget(self.image_text_edit)
 		
 		# #register received data signal:
 		# self.terminal.receivedData.connect(self.on_received_data)
@@ -105,6 +117,10 @@ class MainWindow(QtWidgets.QWidget):
 
 	def on_received_bytes(self, data:QtCore.QByteArray):
 		self.out_text_edit.append(str(data)[2:-1])
+		
+		def render():
+			self.image_text_edit.setText("\n".join(self.getWholeStrImage()))
+		QtCore.QTimer.singleShot(50, render)
 	
 	def on_sent_bytes(self, data:QtCore.QByteArray):
 		self.in_text_edit.append(str(data)[2:-1])
@@ -123,23 +139,28 @@ class MainWindow(QtWidgets.QWidget):
 			self.terminal.sendBytes(bytes_to_send)
 			line += 1
 			if line < len(lines):
-				QtCore.QTimer.singleShot(200, send)
+				QtCore.QTimer.singleShot(500, send)
 		send()
 		
-	def print_image(self, startline, endline):
+	def getStrImage(self, startline:int, endline:int) -> List[str]:
+		lines = []
 		try:
 			num_lines = endline - startline + 1
 			image = self.terminal.getImage(startline, endline)
 			columns = self.terminal.screenColumnsCount()
 			for i in range(num_lines):
 				line = image[i*columns:(i+1)*columns]
-				print("".join([chr(l_.characterValue()) for l_ in line]))
+				lines.append("".join([chr(l_.characterValue()) for l_ in line]))
 		except Exception as e:
 			print(e)
+		return lines
 
+	def getWholeStrImage(self) -> List[str]:
+		return self.getStrImage(0, self.terminal.historyLinesCount()+self.terminal.screenLinesCount())
+	
 	def print_whole_image(self):
 		print("\n\n\n\nPrinting whole image:\n=================")
-		self.print_image(0, self.terminal.historyLinesCount()+self.terminal.screenLinesCount())
+		print("\n".join(self.getWholeStrImage()))
 		print("=================\n\n\n\n")
 		
 class MyApp(QtWidgets.QApplication):
