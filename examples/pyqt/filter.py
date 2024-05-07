@@ -5,6 +5,7 @@ from PyQt5.QtCore import QCoreApplication, QEvent, QMetaObject
 from PyQt5.QtWidgets import QApplication
 
 from PyQt5 import QtCore
+import re
 
 class Terminal(QTermWidget):
 	def __init__(self, process: str, args: list):
@@ -108,35 +109,22 @@ class MainWindow(QtWidgets.QWidget):
 	def on_sent_bytes(self, data:QtCore.QByteArray):
 		self.in_text_edit.append(str(data)[2:-1])
 	
-	def send_to_terminal(self):
+	def send_to_terminal(self, user_input: str):
+		user_input = self.user_input.toPlainText()
+		lines = user_input.split("\n")
+		line = 0
 		def send():
-			# Get the text from the input field, which could be something like "b'h'\nb'e'\nb'l'\nb'l'\nb'o'\nb'\r'"
-			text = self.user_input.toPlainText()
-			
-			# Split the input text into lines, each representing a byte literal
-			byte_literals = text.splitlines()
-			
-			# Initialize an empty bytes object to accumulate the bytes
-			bytes_to_send = bytes()
-			
-			# Iterate over each byte literal
-			for byte_literal in byte_literals:
-				try:
-					# Convert the byte literal to an actual byte using ast.literal_eval
-					byte = ast.literal_eval(byte_literal)
-					# Ensure the result is a bytes object with length 1
-					if isinstance(byte, bytes) and len(byte) == 1:
-						bytes_to_send += byte
-					else:
-						print(f"Input {byte_literal} is not a single byte.")
-				except (ValueError, SyntaxError):
-					print(f"Failed to parse input {byte_literal} as bytes.")
-			
-			# Send the accumulated bytes to the terminal
-			if bytes_to_send:
-				self.terminal.sendBytes(bytes_to_send)
-		
-		QtCore.QTimer.singleShot(1, send)
+			nonlocal line
+			input_text = lines[line]
+			# Convert the input text to bytes
+			bytes_to_send = QtCore.QByteArray(ast.literal_eval(f"b'{input_text}'"))
+
+			# Send the bytes to the terminal
+			self.terminal.sendBytes(bytes_to_send)
+			line += 1
+			if line < len(lines):
+				QtCore.QTimer.singleShot(200, send)
+		send()
 		
 	def print_image(self, startline, endline):
 		try:
