@@ -103,10 +103,10 @@ class MainWindow(QtWidgets.QWidget):
 		self.in_text_edit.append(data)
 
 	def on_received_bytes(self, data:QtCore.QByteArray):
-		self.out_text_edit.append(str(data))
+		self.out_text_edit.append(str(data)[2:-1])
 	
 	def on_sent_bytes(self, data:QtCore.QByteArray):
-		self.in_text_edit.append(str(data))
+		self.in_text_edit.append(str(data)[2:-1])
 	
 	def send_to_terminal(self):
 		def send():
