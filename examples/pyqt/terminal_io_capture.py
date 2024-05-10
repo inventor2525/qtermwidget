@@ -127,11 +127,13 @@ class MainWindow(QtWidgets.QWidget):
 	
 	def send_to_terminal(self, user_input: str):
 		user_input = self.user_input.toPlainText()
+		user_input = user_input.replace("\\\n", "<escaped_newline>")
 		lines = user_input.split("\n")
 		line = 0
 		def send():
 			nonlocal line
 			input_text = lines[line]
+			input_text = input_text.replace("<escaped_newline>", "\\\n")
 			# Convert the input text to bytes
 			bytes_to_send = QtCore.QByteArray(ast.literal_eval(f"b'{input_text}'"))
 
