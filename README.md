@@ -1,3 +1,10 @@
+This is me messing with QTermWidget to log pty IO for LLM interaction and training.
+
+I'll document how I installed this latter.
+
+Once it is though, you can call examples/pyqt/terminal_io_capture.py to play.
+
+
 # QTermWidget
 
 ## Overview
