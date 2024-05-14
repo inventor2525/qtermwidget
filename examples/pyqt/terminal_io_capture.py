@@ -67,6 +67,13 @@ class MainWindow(QtWidgets.QWidget):
 		self.block_button.toggled.connect(toggle_block)
 		self.buttons_layout.addWidget(self.block_button)
 		
+		self.clear_button = QtWidgets.QPushButton("Clear IO")
+		def clear():
+			self.in_text_edit.clear()
+			self.out_text_edit.clear()
+		self.clear_button.clicked.connect(clear)
+		self.buttons_layout.addWidget(self.clear_button)
+
 		self.pty_text_label = QtWidgets.QLabel("This is how a shell talks to the terminal emulator (above) when you type:")
 		self.bottomLayout.addWidget(self.pty_text_label)
 		
